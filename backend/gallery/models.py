@@ -35,6 +35,7 @@ class MemoryMetadata(models.Model):
     video_metadata = models.ForeignKey(VideoMetadata, on_delete=models.CASCADE, null=True, blank=True)
     photo_metadata = models.ForeignKey(PhotoMetadata, on_delete=models.CASCADE, null=True, blank=True)
 
+#any sort of post is a memory
 class Memory(models.Model):
     uri = models.CharField(max_length=255)
     creation_timestamp = models.DateTimeField()
@@ -45,3 +46,11 @@ class Memory(models.Model):
 
     is_sensitive = models.BooleanField(null=True, blank=False)
 
+class Story(models.Model):
+    uri = models.URLField()
+    creation_timestamp = models.DateTimeField()
+    title = models.CharField(max_length=255, blank=True)
+    cross_post_source = models.ForeignKey(CrossPostSource, on_delete=models.CASCADE)
+    media_metadata = models.OneToOneField(MemoryMetadata, on_delete=models.CASCADE)
+
+    is_sensitive = models.BooleanField(null=True, blank=False)
