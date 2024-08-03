@@ -18,8 +18,6 @@ class ExifData(models.Model):
     metering_mode = models.IntegerField(null=True, blank=True)
     scene_capture_type = models.CharField(max_length=20, null=True, blank=True)
 
-    is_sensitive = models.BooleanField(null=True, blank=False)
-
 class VideoMetadata(models.Model):
     exif_data = models.ForeignKey(ExifData, on_delete=models.CASCADE, related_name='video_metadata', null=True, blank=True)
     has_camera_metadata = models.BooleanField()
@@ -35,22 +33,30 @@ class MemoryMetadata(models.Model):
     video_metadata = models.ForeignKey(VideoMetadata, on_delete=models.CASCADE, null=True, blank=True)
     photo_metadata = models.ForeignKey(PhotoMetadata, on_delete=models.CASCADE, null=True, blank=True)
 
-#any sort of post is a memory
-class Memory(models.Model):
+class Media(models.Model):
     uri = models.CharField(max_length=255)
     creation_timestamp = models.DateTimeField()
     title = models.TextField(null=True, blank=True)
     cross_post_source = models.ForeignKey(CrossPostSource, on_delete=models.CASCADE)
-    Memory_metadata = models.ForeignKey(MemoryMetadata, on_delete=models.CASCADE)
-    is_profile_picture = models.BooleanField(default=False)
+    media_metadata = models.ForeignKey(MemoryMetadata, on_delete=models.CASCADE)
+    is_profile_picture = models.BooleanField(default=False) # haven't seen this yet
 
-    is_sensitive = models.BooleanField(null=True, blank=False)
+    is_sensitive = models.BooleanField(default=False)
 
+#any sort of post is a memory, a memory consists of media
+class Memory(models.Model):
+    media = models.ManyToManyField(Media)
+    title = models.CharField(max_length=255)
+    creation_timestamp = models.DateTimeField()
+
+    is_sensitive = models.BooleanField(default=False)
+
+#Story will prob be eliminated, and become 'Media' as well. Maybe... i'll add media type there
 class Story(models.Model):
     uri = models.URLField()
     creation_timestamp = models.DateTimeField()
     title = models.CharField(max_length=255, blank=True)
     cross_post_source = models.ForeignKey(CrossPostSource, on_delete=models.CASCADE)
-    media_metadata = models.OneToOneField(MemoryMetadata, on_delete=models.CASCADE)
+    memory_metadata = models.OneToOneField(MemoryMetadata, on_delete=models.CASCADE)
 
-    is_sensitive = models.BooleanField(null=True, blank=False)
+    is_sensitive = models.BooleanField(default=True)
