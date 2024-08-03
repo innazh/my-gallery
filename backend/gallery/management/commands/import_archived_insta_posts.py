@@ -21,8 +21,17 @@ class Command(BaseCommand):
 
         # Iterate over archived post media
         for post in data.get('ig_archived_post_media', []):
-            memory_title = post.get('title', '')
-            memory_creation_timestamp = post.get('creation_timestamp')
+
+            memory_title=""
+            memory_creation_timestamp = 0
+            # if there's just one media obj, then it'll contain the title and creation_ts, instead of the parent obj, so we need to handle it.
+            if len(post['media'])>1:
+                memory_title = post.get('title', '')
+                memory_creation_timestamp = post.get('creation_timestamp')
+            else:
+                media = post.get('media',[])
+                memory_title = media.get('title')
+                memory_creation_timestamp = media.get('creation_timestamp')
 
             # Create Memory instance
             memory = Memory.objects.create(
