@@ -30,8 +30,8 @@ class Command(BaseCommand):
                 memory_creation_timestamp = post.get('creation_timestamp')
             else:
                 media = post.get('media',[])
-                memory_title = media.get('title')
-                memory_creation_timestamp = media.get('creation_timestamp')
+                memory_title = media[0].get('title')
+                memory_creation_timestamp = media[0].get('creation_timestamp')
 
             # Create Memory instance
             memory = Memory.objects.create(
