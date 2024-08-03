@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 import json
 from django.core.management.base import BaseCommand
-from .command_helpers import convert_timestamp_to_datetime, parse_date
-from gallery.models import ExifData, VideoMetadata, PhotoMetadata, CrossPostSource, MemoryMetadata, Media, Memory
+from .command_helpers import convert_timestamp_to_datetime, handle_photo_metadata, handle_video_metadata, parse_date
+from gallery.models import CrossPostSource, MemoryMetadata, Media, Memory
 
 class Command(BaseCommand):
     help = 'Import Instagram memories from a JSON file.'
@@ -40,39 +40,9 @@ class Command(BaseCommand):
                 media_metadata = media_item.get('media_metadata')
                 cross_post_source = media_item.get('cross_post_source')
 
-                # Handle media metadata
-                video_metadata = media_metadata.get('video_metadata', None)
-                photo_metadata = media_metadata.get('photo_metadata', None)
-                exif_data = None
-
-                if video_metadata and 'exif_data' in video_metadata and video_metadata['exif_data']:
-                    exif_data = video_metadata['exif_data'][0]
-                    if 'date_time_digitized' in exif_data:
-                        exif_data['date_time_digitized'] = parse_date(exif_data['date_time_digitized'])
-                    if 'date_time_original' in exif_data:
-                        exif_data['date_time_original'] = parse_date(exif_data['date_time_original'])
-                    exif_data_instance = ExifData.objects.create(**exif_data)
-                    video_metadata_instance = VideoMetadata.objects.create(
-                        exif_data=exif_data_instance,
-                        has_camera_metadata=video_metadata.get('has_camera_metadata', False)
-                    )
-                else:
-                    video_metadata_instance = None
-
-                if photo_metadata and 'exif_data' in photo_metadata and photo_metadata['exif_data']:
-                    exif_data = photo_metadata['exif_data'][0]
-                    if 'date_time_digitized' in exif_data:
-                        exif_data['date_time_digitized'] = parse_date(exif_data['date_time_digitized'])
-                    if 'date_time_original' in exif_data:
-                        exif_data['date_time_original'] = parse_date(exif_data['date_time_original'])
-                    exif_data_instance = ExifData.objects.create(**exif_data)
-                    photo_metadata_instance = PhotoMetadata.objects.create(
-                        exif_data=exif_data_instance,
-                        has_camera_metadata=photo_metadata.get('has_camera_metadata', False)
-                    )
-                else:
-                    photo_metadata_instance = None
-
+                photo_metadata_instance = handle_photo_metadata(media_metadata)
+                video_metadata_instance = handle_video_metadata(media_metadata)
+                
                 memory_metadata = MemoryMetadata.objects.create(
                     video_metadata=video_metadata_instance,
                     photo_metadata=photo_metadata_instance
@@ -93,4 +63,4 @@ class Command(BaseCommand):
                     memory=memory  # Associate media with memory
                 )
 
-        self.stdout.write(self.style.SUCCESS('Successfully imported Instagram memories.'))
+        self.stdout.write(self.style.SUCCESS('Successfully imported Instagram posts as memories.'))

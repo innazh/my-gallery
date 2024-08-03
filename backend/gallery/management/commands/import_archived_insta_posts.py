@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import json
 from django.core.management.base import BaseCommand
+from .command_helpers import convert_timestamp_to_datetime, handle_photo_metadata, handle_video_metadata
 from gallery.models import ExifData, VideoMetadata, PhotoMetadata, CrossPostSource, MemoryMetadata, Media, Memory
 
 class Command(BaseCommand):
@@ -8,11 +9,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--path', type=str, help='Path to the JSON file')
-
-    # Convert Unix timestamp to a datetime object
-    def convert_timestamp_to_datetime(self,timestamp):
-        dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-        return dt.isoformat()
 
     def handle(self, *args, **kwargs):
         path = kwargs['path']
@@ -36,7 +32,7 @@ class Command(BaseCommand):
             # Create Memory instance
             memory = Memory.objects.create(
                 title=memory_title,
-                creation_timestamp=self.convert_timestamp_to_datetime(memory_creation_timestamp)
+                creation_timestamp=convert_timestamp_to_datetime(memory_creation_timestamp)
             )
 
             for media_item in post.get('media', []):
@@ -46,27 +42,8 @@ class Command(BaseCommand):
                 cross_post_source = media_item.get('cross_post_source')
 
                 # Handle media metadata
-                video_metadata = media_metadata.get('video_metadata', None)
-                photo_metadata = media_metadata.get('photo_metadata', None)
-                exif_data = None
-
-                if video_metadata and 'exif_data' in video_metadata and video_metadata['exif_data']:
-                    exif_data = ExifData.objects.create(**video_metadata['exif_data'][0])
-                    video_metadata_instance = VideoMetadata.objects.create(
-                        exif_data=exif_data,
-                        has_camera_metadata=video_metadata.get('has_camera_metadata', False)
-                    )
-                else:
-                    video_metadata_instance = None
-
-                if photo_metadata and 'exif_data' in photo_metadata and photo_metadata['exif_data']:
-                    exif_data = ExifData.objects.create(**photo_metadata['exif_data'][0])
-                    photo_metadata_instance = PhotoMetadata.objects.create(
-                        exif_data=exif_data,
-                        has_camera_metadata=photo_metadata.get('has_camera_metadata', False)
-                    )
-                else:
-                    photo_metadata_instance = None
+                photo_metadata_instance = handle_photo_metadata(media_metadata)
+                video_metadata_instance = handle_video_metadata(media_metadata)
 
                 memory_metadata = MemoryMetadata.objects.create(
                     video_metadata=video_metadata_instance,
@@ -79,7 +56,7 @@ class Command(BaseCommand):
 
                 Media.objects.create(
                     uri=media_uri,
-                    creation_timestamp=self.convert_timestamp_to_datetime(media_creation_timestamp),
+                    creation_timestamp=convert_timestamp_to_datetime(media_creation_timestamp),
                     title=media_item.get('title', ''),
                     cross_post_source=cross_post_source_instance,
                     media_metadata=memory_metadata,
