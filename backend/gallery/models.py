@@ -17,6 +17,8 @@ class ExifData(models.Model):
     shutter_speed = models.CharField(max_length=20, null=True, blank=True)
     metering_mode = models.IntegerField(null=True, blank=True)
     scene_capture_type = models.CharField(max_length=20, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
 class VideoMetadata(models.Model):
     exif_data = models.ForeignKey(ExifData, on_delete=models.CASCADE, related_name='video_metadata', null=True, blank=True)
