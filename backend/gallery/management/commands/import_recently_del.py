@@ -16,7 +16,7 @@ class Command(BaseCommand):
             data = json.load(file)
 
         # Iterate over archived post media
-        for post in data.get('ig_archived_post_media', []):
+        for post in data.get('ig_recently_deleted_media', []):
 
             memory_title=""
             memory_creation_timestamp = 0
