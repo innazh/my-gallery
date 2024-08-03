@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import json
 from django.core.management.base import BaseCommand
 from .command_helpers import convert_timestamp_to_datetime, handle_photo_metadata, handle_video_metadata
-from gallery.models import ExifData, VideoMetadata, PhotoMetadata, CrossPostSource, MemoryMetadata, Media, Memory
+from gallery.models import CrossPostSource, MemoryMetadata, Media, Memory
 
 class Command(BaseCommand):
     help = 'Import Instagram memories from a JSON file.'
