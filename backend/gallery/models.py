@@ -51,6 +51,11 @@ class Memory(models.Model):
     title = models.CharField(max_length=255)
     creation_timestamp = models.DateTimeField()
 
+    MEMORY_TYPES = [
+        ("story", "Story"),
+        ("post", "Post")
+    ]
+    type = models.CharField(max_length=12, choices=MEMORY_TYPES, default=MEMORY_TYPES[1])
     is_sensitive = models.BooleanField(default=False)
 
 #Story will prob be eliminated, and become 'Media' as well. Maybe... i'll add media type there
