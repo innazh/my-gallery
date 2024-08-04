@@ -33,8 +33,8 @@ def construct_memory(data):
         memory_creation_timestamp = data.get('creation_timestamp')
     else:
         media = data.get('media',[])
-        memory_title = media.get('title','')
-        memory_creation_timestamp = media.get('creation_timestamp')
+        memory_title = media[0].get('title')
+        memory_creation_timestamp = media[0].get('creation_timestamp')
 
     # Create Memory instance
     memory = Memory(
