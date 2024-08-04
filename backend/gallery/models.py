@@ -53,7 +53,8 @@ class Memory(models.Model):
 
     MEMORY_TYPES = [
         ("story", "Story"),
-        ("post", "Post")
+        ("post", "Post"),
+        ("reel", "Reel")
     ]
     type = models.CharField(max_length=12, choices=MEMORY_TYPES, default=MEMORY_TYPES[1])
     is_sensitive = models.BooleanField(default=False)
