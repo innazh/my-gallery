@@ -58,13 +58,3 @@ class Memory(models.Model):
     ]
     type = models.CharField(max_length=12, choices=MEMORY_TYPES, default=MEMORY_TYPES[1])
     is_sensitive = models.BooleanField(default=False)
-
-#Story will prob be eliminated, and become 'Media' as well. Maybe... i'll add media type there
-class Story(models.Model):
-    uri = models.URLField()
-    creation_timestamp = models.DateTimeField()
-    title = models.CharField(max_length=255, blank=True)
-    cross_post_source = models.ForeignKey(CrossPostSource, on_delete=models.CASCADE)
-    media_metadata = models.OneToOneField(MediaMetadata, on_delete=models.CASCADE)
-
-    is_sensitive = models.BooleanField(default=True)

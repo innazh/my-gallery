@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ExifData, VideoMetadata, PhotoMetadata, CrossPostSource, MediaMetadata, Memory,Story, Media
+from .models import ExifData, VideoMetadata, PhotoMetadata, CrossPostSource, MediaMetadata, Memory, Media
 
 @admin.register(ExifData)
 class ExifDataAdmin(admin.ModelAdmin):
@@ -36,12 +36,6 @@ class MediaAdmin(admin.ModelAdmin):
     list_display = ('id', 'uri', 'creation_timestamp', 'title', 'cross_post_source', 'is_profile_picture', 'is_sensitive')
     list_filter = ('is_profile_picture', 'is_sensitive')
     search_fields = ('title', 'uri')
-
-@admin.register(Story)
-class StoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'uri', 'creation_timestamp', 'title', 'cross_post_source', 'media_metadata', 'is_sensitive')
-    list_filter = ('creation_timestamp', 'is_sensitive', 'cross_post_source', 'media_metadata')
-    search_fields = ('uri', 'title', 'cross_post_source__source_app', 'memory_metadata__id')
 
 @admin.register(Memory)
 class MemoryAdmin(admin.ModelAdmin):
