@@ -31,7 +31,7 @@ class PhotoMetadata(models.Model):
 class CrossPostSource(models.Model):
     source_app = models.CharField(max_length=10)
 
-class MemoryMetadata(models.Model):
+class MediaMetadata(models.Model):
     video_metadata = models.ForeignKey(VideoMetadata, on_delete=models.CASCADE, null=True, blank=True)
     photo_metadata = models.ForeignKey(PhotoMetadata, on_delete=models.CASCADE, null=True, blank=True)
 
@@ -40,7 +40,7 @@ class Media(models.Model):
     creation_timestamp = models.DateTimeField()
     title = models.TextField(null=True, blank=True)
     cross_post_source = models.ForeignKey(CrossPostSource, on_delete=models.CASCADE)
-    media_metadata = models.ForeignKey(MemoryMetadata, on_delete=models.CASCADE)
+    media_metadata = models.ForeignKey(MediaMetadata, on_delete=models.CASCADE)
     is_profile_picture = models.BooleanField(default=False) # haven't seen this yet
 
     is_sensitive = models.BooleanField(default=False)
@@ -59,6 +59,6 @@ class Story(models.Model):
     creation_timestamp = models.DateTimeField()
     title = models.CharField(max_length=255, blank=True)
     cross_post_source = models.ForeignKey(CrossPostSource, on_delete=models.CASCADE)
-    memory_metadata = models.OneToOneField(MemoryMetadata, on_delete=models.CASCADE)
+    media_metadata = models.OneToOneField(MediaMetadata, on_delete=models.CASCADE)
 
     is_sensitive = models.BooleanField(default=True)

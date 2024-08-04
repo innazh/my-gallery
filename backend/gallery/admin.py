@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ExifData, VideoMetadata, PhotoMetadata, CrossPostSource, MemoryMetadata, Memory,Story, Media
+from .models import ExifData, VideoMetadata, PhotoMetadata, CrossPostSource, MediaMetadata, Memory,Story, Media
 
 @admin.register(ExifData)
 class ExifDataAdmin(admin.ModelAdmin):
@@ -25,8 +25,8 @@ class CrossPostSourceAdmin(admin.ModelAdmin):
     list_display = ('id', 'source_app')
     search_fields = ('source_app',)
 
-@admin.register(MemoryMetadata)
-class MemoryMetadataAdmin(admin.ModelAdmin):
+@admin.register(MediaMetadata)
+class MediaMetadataAdmin(admin.ModelAdmin):
     list_display = ('id', 'video_metadata', 'photo_metadata')
     list_filter = ('video_metadata', 'photo_metadata')
     search_fields = ('video_metadata__id', 'photo_metadata__id')
@@ -39,8 +39,8 @@ class MediaAdmin(admin.ModelAdmin):
 
 @admin.register(Story)
 class StoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'uri', 'creation_timestamp', 'title', 'cross_post_source', 'memory_metadata', 'is_sensitive')
-    list_filter = ('creation_timestamp', 'is_sensitive', 'cross_post_source', 'memory_metadata')
+    list_display = ('id', 'uri', 'creation_timestamp', 'title', 'cross_post_source', 'media_metadata', 'is_sensitive')
+    list_filter = ('creation_timestamp', 'is_sensitive', 'cross_post_source', 'media_metadata')
     search_fields = ('uri', 'title', 'cross_post_source__source_app', 'memory_metadata__id')
 
 @admin.register(Memory)
