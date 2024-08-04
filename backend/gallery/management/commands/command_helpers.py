@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from gallery.models import ExifData, Memory, PhotoMetadata, VideoMetadata
+from gallery.models import ExifData, MediaMetadata, Memory, PhotoMetadata, VideoMetadata
 
 def parse_date(date_str):
     """
@@ -33,11 +33,11 @@ def construct_memory(data):
         memory_creation_timestamp = data.get('creation_timestamp')
     else:
         media = data.get('media',[])
-        memory_title = media.get('title')
+        memory_title = media.get('title','')
         memory_creation_timestamp = media.get('creation_timestamp')
 
     # Create Memory instance
-    memory = Memory.objects.create(
+    memory = Memory(
         title=memory_title,
         creation_timestamp=convert_timestamp_to_datetime(memory_creation_timestamp)
     )
@@ -93,3 +93,16 @@ def handle_video_metadata(media_metadata):
         )
 
     return video_metadata_parsing_result
+
+def construct_media_metadata(media_metadata):
+    """
+    construct_media_metadata receives media_metadata part of json data and turns it into a MediaMetadata object, which it returns.
+    """
+    photo_metadata_instance = handle_photo_metadata(media_metadata)
+    video_metadata_instance = handle_video_metadata(media_metadata)
+
+    memory_metadata = MediaMetadata(
+        video_metadata=video_metadata_instance,
+        photo_metadata=photo_metadata_instance
+    )
+    return memory_metadata
