@@ -19,9 +19,9 @@ def convert_timestamp_to_datetime(timestamp):
         dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
         return dt.isoformat()
 
-def construct_memory(data):
+def construct_memory(data, t='post'):
     """
-    Given media's parent, returns a memory object.
+    Given media's parent and type, returns a memory object.
     It gets its title and creation_ts from either itself (if there are multiple medias),
     Or from a media object (in case it's single)
     """
@@ -39,7 +39,8 @@ def construct_memory(data):
     # Create Memory instance
     memory = Memory(
         title=memory_title,
-        creation_timestamp=convert_timestamp_to_datetime(memory_creation_timestamp)
+        creation_timestamp=convert_timestamp_to_datetime(memory_creation_timestamp),
+        type=t
     )
     return memory
 
